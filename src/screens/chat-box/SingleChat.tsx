@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux-store/store';
 import { getUserDetails } from '../../redux-store/actions/auth';
 import Messages from '../../components/Messages';
+import UserList from './UserList';
 
 interface MessageItem {
     id: string;
@@ -21,7 +22,7 @@ const SingleChat = () => {
     const name: string = user ? user.name : '';
 
     useEffect(() => {
-        dispatch(getUserDetails());
+        dispatch(getUserDetails({}));
     }, [dispatch]);
 
     const ENDPOINT = 'http://localhost:8080';
@@ -72,37 +73,32 @@ const SingleChat = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Box>
-                <h1>ChatBox</h1>
-                <Box
-                    height={800}
-                    width={1200}
-                    my={4}
-                    gap={4}
-                    sx={{ border: '2px solid grey' }}
-                    position={'relative'}
-                >
-                    <div className="chat-header">
-                        <Box p={5} bgcolor={"grey"}>
-                        </Box>
-                    </div>
-                    <div className="chat-messages-container">
-                        {messages.map((item, i) => (
-                            <Messages
-                                key={i}
-                                user={item.id === id ? '' : item.user}
-                                message={item.message}
-                                classname={item.id === id ? 'right' : 'left'}
-                            />
-                        ))}
-                    </div>
-                    <div className="chat-footer">
-                        <form onSubmit={sendMessage}>
-                            <Box width={1200} borderTop={2} bottom={0} position={'absolute'}>
-                                <Box className="input-button-box" display={'flex'} justifyContent={'between'} alignItems={"center"}>
-                                    <Box sx={{ width: '90%' }} >
-                                        <div className="input-box">
+        <div className='container mx-auto p-10 '>
+            <div className='flex h-screen"'>
+                <div className='w-1/4 overflow-y-auto'>
+                    <UserList />
+                </div>
+                <div className=' flex-1'>
+                    <div className='chat-container '>
+                        <div className="chat-header">
+                            <Box p={5} bgcolor={"grey"}>
+                            </Box>
+                        </div>
+                        <div className="chat-messages-container overflow-y-auto h-full">
+                            {messages.map((item, i) => (
+                                <Messages
+                                    key={i}
+                                    user={item.id === id ? '' : item.user}
+                                    message={item.message}
+                                    classname={item.id === id ? 'right' : 'left'}
+                                />
+                            ))}
+                        </div>
+                        <div className="chat-footer">
+                            <form onSubmit={sendMessage}>
+                                <div className="input-button-box flex items-center">
+                                    <div className='flex w-full'>
+                                        <div className="input-box flex-1 ">
                                             <TextField
                                                 id="outlined-basic"
                                                 label=""
@@ -114,8 +110,6 @@ const SingleChat = () => {
                                                 sx={{ borderRadius: "unset" }}
                                             />
                                         </div>
-                                    </Box>
-                                    <Box sx={{ width: '10%' }}>
                                         <div className="button-box">
                                             <Button
                                                 type="submit"
@@ -127,14 +121,15 @@ const SingleChat = () => {
                                                 Send
                                             </Button>
                                         </div>
-                                    </Box>
-                                </Box>
-                            </Box>
-                        </form>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
                     </div>
-                </Box>
-            </Box>
-        </Box>
+                </div>
+            </div>
+        </div>
     );
 };
 

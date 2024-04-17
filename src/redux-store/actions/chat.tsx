@@ -27,23 +27,10 @@ export const handleSuccessNotify = async (res: any) => {
     return;
 }
 
-export const signup = createAsyncThunk("signup", async (data: any, { dispatch }) => {
-    try {
-        const response = await axios.post(API_ENDPOINTS.SIGNUP, data);
-        await handleSuccessNotify(response)
-        return response.data
-    }
-    catch (err) {
-        handleErrNotify(err, dispatch);
-    }
-})
-
 export const login = createAsyncThunk("login", async (data: any, { dispatch }) => {
     try {
         const response = await axios.post<LoginResType>(API_ENDPOINTS.LOGIN, data);
         await handleSuccessNotify(response)
-        const userToken = { userToken: response?.data?.token }
-        await dispatch(getUserDetails(userToken))
         return response.data
     }
     catch (err) {
@@ -51,24 +38,11 @@ export const login = createAsyncThunk("login", async (data: any, { dispatch }) =
     }
 })
 
-export const getUserDetails = createAsyncThunk("getUserDetails", async ({ userToken }: { userToken?: string }, { getState, dispatch }) => {
+export const getUserList = createAsyncThunk("getUserList", async ({ userToken }: { userToken?: string }, { getState, dispatch }) => {
     try {
         const token = userToken || (await (getState() as RootState).auth.token);
         const response = await axios.get<userResType>(API_ENDPOINTS.USER_DETAILS, { headers: { Authorization: `Bearer ${token}` } });
         return response.data?.user;
-    }
-    catch (err) {
-        handleErrNotify(err, dispatch)
-    }
-})
-
-
-
-export const getUserList = createAsyncThunk("getUserList", async ({ userToken }: { userToken?: string }, { getState, dispatch }) => {
-    try {
-        const token = userToken || (await (getState() as RootState).auth.token);
-        const response = await axios.get(API_ENDPOINTS.USER_LIST, { headers: { Authorization: `Bearer ${token}` } });
-        return response.data;
     }
     catch (err) {
         handleErrNotify(err, dispatch)

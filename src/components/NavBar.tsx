@@ -12,13 +12,19 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux-store/store';
+import { userLogout } from '../redux-store/reducers/authSlice';
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['Products', 'Chat', 'Pricing', 'Blog'];
+const settings = ['Profile', 'Chat', 'Account', 'Dashboard', 'Login', 'Logout'];
 
 function ResponsiveAppBar() {
+  const dispatch = useDispatch<AppDispatch>()
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const token = useSelector((state: RootState) => state.auth.token)
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -34,6 +40,11 @@ function ResponsiveAppBar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const logoutHandler = () => {
+    const token = null
+    dispatch(userLogout(token))
+  }
 
   return (
     <AppBar position="static">
@@ -89,7 +100,9 @@ function ResponsiveAppBar() {
             >
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                  <Typography textAlign="center">
+                    <Link to={`/${page?.toLowerCase()}`}>{page}</Link>
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -111,7 +124,7 @@ function ResponsiveAppBar() {
               textDecoration: 'none',
             }}
           >
-            LOGO
+            ChatBox
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
@@ -120,7 +133,15 @@ function ResponsiveAppBar() {
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                {page}
+                {page === "Logout" && token ? (
+                  <a onClick={logoutHandler}>Logout</a>
+                ) :
+                  // user?.email ? (<></>) :
+                  (
+
+                    <Link to={`/${page?.toLowerCase()}`} >{page}</Link>
+                  )}
+
               </Button>
             ))}
           </Box>
@@ -148,9 +169,17 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
+                <>
+                  {setting === "Logout" && token ? (
+                    <MenuItem>
+                      <Typography textAlign="center" onClick={logoutHandler}>{setting}</Typography>
+                    </MenuItem>
+                  ) : (
+                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                      <Typography textAlign="center">{setting}</Typography>
+                    </MenuItem>
+                  )}
+                </>
               ))}
             </Menu>
           </Box>

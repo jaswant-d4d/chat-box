@@ -26,13 +26,6 @@ const Home: React.FC = () => {
 
     return (
         <div className="bg-home">
-            <header>
-                <Link to={"/chat"}>
-                    <h3 className='text-center'>
-                        chat
-                    </h3>
-                </Link>
-            </header>
         </div>
     );
 }

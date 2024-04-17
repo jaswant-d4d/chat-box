@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux-store/store";
 
 const ProtectedRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
-  const user =useSelector((state: RootState) => state.auth.token);
+  const user = useSelector((state: RootState) => state.auth.token);
   const location = useLocation();
   return !user ? (
     <Navigate to={"/login"} state={{ from: location }} replace />
