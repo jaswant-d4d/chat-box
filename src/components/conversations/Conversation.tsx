@@ -43,6 +43,7 @@ const Conversation = () => {
                             key={i}
                             user={item.senderId === user?._id ? 'You' : item.receiverId}
                             message={item.message}
+                            createdAt={item.createdAt}
                             classname={item.senderId === user?._id ? 'right' : 'left'}
                         />
                     </div>

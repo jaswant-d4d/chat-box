@@ -26,7 +26,7 @@ const UserList: React.FC<Params> = ({ onlineUsers }) => {
 
     return (
         <>
-            <div className="">
+            <section className='user-list-section'>
                 <div className="px-4 pt-4 border-b-2 bg-slate-400">
                     <div className="flex items-center">
                         <div className="chat-user-img mr-2">
@@ -70,7 +70,7 @@ const UserList: React.FC<Params> = ({ onlineUsers }) => {
                         ))}
                     </ul>
                 </div>
-            </div>
+            </section>
         </>
     );
 };

@@ -10,6 +10,8 @@ import { sendNewMessage, setOnlineUsers } from '../../redux-store/reducers/chatS
 import NotificationSound from "../../assets/sounds/notification.mp3";
 import Conversation from '../../components/conversations/Conversation';
 import CustomMenu from '../../components/CustomMenu';
+import { ArrowBackIosNewOutlined } from '@mui/icons-material';
+import { setSelectedConversation } from '../../redux-store/reducers/authSlice';
 
 const SingleChat = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -70,20 +72,28 @@ const SingleChat = () => {
         setMessage('');
     };
 
-
+    const naviagteToback = () => {
+        const selectedConversationData = {
+            name: "",
+            username: "",
+            _id: ""
+        }
+        dispatch(setSelectedConversation(selectedConversationData))
+    }
     return (
-        <div className='container mx-auto p-10'>
+        <div className='container mx-auto mt-10'>
             <div className='flex h-screen'>
-                <div className='w-1/4'>
-                    <section>
-                        <UserList onlineUsers={onlineUsers} />
-                    </section>
+                <div className={`chat-left-sidebar ${!selectedUser?._id ? "show" : ""}`}>
+                    <UserList onlineUsers={onlineUsers} />
                 </div>
-                <div className='flex-1'>
+                <div className={` chat-container ${selectedUser?._id ? "show" : ""}`}>
                     {selectedUser?._id ? (
                         <section className='chat-section'>
-                            <div className="chat-header flex bg-slate-500 justify-between p-6">
-                                <div className='text-white'>
+                            <div className="chat-header flex  bg-slate-500 justify-between p-6">
+                                <div className='text-white flex'>
+                                    {selectedUser?._id && (
+                                        <ArrowBackIosNewOutlined className='mr-8' onClick={naviagteToback} />
+                                    )}
                                     To: <span className='font-bold'>{selectedUser?.name}</span>
                                 </div>
                                 <div className='text-white'>
