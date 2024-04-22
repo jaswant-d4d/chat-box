@@ -10,7 +10,7 @@ import { sendNewMessage, setOnlineUsers } from '../../redux-store/reducers/chatS
 import NotificationSound from "../../assets/sounds/notification.mp3";
 import Conversation from '../../components/conversations/Conversation';
 import CustomMenu from '../../components/CustomMenu';
-import { ArrowBackIosNewOutlined } from '@mui/icons-material';
+import { ArrowBackIosNewOutlined, SendRounded } from '@mui/icons-material';
 import { setSelectedConversation } from '../../redux-store/reducers/authSlice';
 
 const SingleChat = () => {
@@ -127,6 +127,7 @@ const SingleChat = () => {
                                                     sx={{ borderRadius: "unset", padding: "15px 30px" }}
                                                 >
                                                     Send
+                                                    <SendRounded className='ms-2' />
                                                 </Button>
                                             </div>
                                         </div>

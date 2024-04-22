@@ -35,6 +35,9 @@
     min-height: 74vh;
     overflow: auto;
 }
+.chat-left-sidebar {
+    width: 45%;
+}
 
 .chat-section {
     position: relative;
@@ -55,7 +58,7 @@
     right: 0;
     width: 100%;
     padding: 1rem;
-    background: #ede9e9;
+    background: #64748b;
 }
 
 .message-box {
