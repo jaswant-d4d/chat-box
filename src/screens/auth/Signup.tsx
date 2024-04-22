@@ -22,7 +22,9 @@ const Signup: React.FC = () => {
             email: "",
             password: "",
             username: "",
-            dob: ""
+            dob: "",
+            gender: "",
+            avatar: ""
         },
         validate: signupValidate,
         onSubmit: SubmitHandler,

@@ -1,132 +1,130 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, TextField } from '@mui/material';
-import socketIo from 'socket.io-client';
+import { Button, TextField } from '@mui/material';
+import io, { Socket } from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux-store/store';
-import { getUserDetails } from '../../redux-store/actions/auth';
-import Messages from '../../components/Messages';
 import UserList from './UserList';
-
-interface MessageItem {
-    id: string;
-    user: string;
-    message: string;
-}
+import { sendMessage } from '../../redux-store/actions/chat';
+import NotSelectedConversation from './NotSelectedConversation';
+import { sendNewMessage, setOnlineUsers } from '../../redux-store/reducers/chatSlice';
+import NotificationSound from "../../assets/sounds/notification.mp3";
+import Conversation from '../../components/conversations/Conversation';
+import CustomMenu from '../../components/CustomMenu';
 
 const SingleChat = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const [id, setId] = useState<string | undefined>('');
     const [message, setMessage] = useState<string>('');
-    const [messages, setMessages] = useState<MessageItem[]>([]);
     const user = useSelector((state: RootState) => state.auth.user);
-    const name: string = user ? user.name : '';
+    const selectedUser = useSelector((state: RootState) => state.auth.selectedConversation);
+    // const socket = useSelector((state: RootState) => state.chat.socket);
+    const { onlineUsers } = useSelector((state: RootState) => state.chat);
 
     useEffect(() => {
-        dispatch(getUserDetails({}));
-    }, [dispatch]);
-
-    const ENDPOINT = 'http://localhost:8080';
-    const socket = socketIo(ENDPOINT, { transports: ['websocket'] });
-
-    useEffect(() => {
-        socket.on('connect', async () => {
-            setId(socket.id);
+        if (!user) return;
+        const socket = io('https://chat-backend-omega-mocha.vercel.app', {
+            transports: ['websocket'],
+            query: {
+                userId: user._id,
+            },
         });
 
-        socket.emit('joined', { user: name });
-
-        socket.on('welcome', (data: MessageItem) => {
-            setMessages(prevMessages => [...prevMessages, data]);
-        });
-
-        socket.on('userJoined', (data: MessageItem) => {
-            setMessages(prevMessages => [...prevMessages, data]);
-        });
-
-        socket.on('leave', (data: MessageItem) => {
-            setMessages(prevMessages => [...prevMessages, data]);
-        });
-
-        socket.on('sendMessage', (data: MessageItem) => {
-            setMessages(prevMessages => [...prevMessages, data]);
-        });
-
-        return () => {
-            socket.emit('disconnected');
-            socket.disconnect();
-            socket.off();
+        const handleConnect = () => {
+            console.log('connected!');
+            socket.emit('greet', { message: 'Hello Mr.Server!' });
         };
 
+        const handleGetOnlineUsers = (users: any) => {
+            dispatch(setOnlineUsers(users));
+        };
+
+        const handleNewMessage = (newMessage: any) => {
+            newMessage.shouldShake = true;
+            const sound = new Audio(NotificationSound);
+            sound.play();
+            dispatch(sendNewMessage(newMessage));
+        };
+
+        socket.on('connect', handleConnect);
+        socket.on('getOnlineUsers', handleGetOnlineUsers);
+        socket.on('newMessage', handleNewMessage);
+
+        return () => {
+            socket.off('connect', handleConnect);
+            socket.off('getOnlineUsers', handleGetOnlineUsers);
+            socket.off('newMessage', handleNewMessage);
+            socket.close();
+        };
     }, []);
 
     const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         setMessage(e.target.value);
     };
 
-    const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
+    const sendMessageHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!message) {
-            return false
+            return false;
         }
-        socket.emit('message', { message, id });
+        const formData = { message: message, receiverId: selectedUser?._id }
+        dispatch(sendMessage(formData));
         setMessage('');
     };
 
+
     return (
-        <div className='container mx-auto p-10 '>
-            <div className='flex h-screen"'>
-                <div className='w-1/4 overflow-y-auto'>
-                    <UserList />
+        <div className='container mx-auto p-10'>
+            <div className='flex h-screen'>
+                <div className='w-1/4'>
+                    <section>
+                        <UserList onlineUsers={onlineUsers} />
+                    </section>
                 </div>
-                <div className=' flex-1'>
-                    <div className='chat-container '>
-                        <div className="chat-header">
-                            <Box p={5} bgcolor={"grey"}>
-                            </Box>
-                        </div>
-                        <div className="chat-messages-container overflow-y-auto h-full">
-                            {messages.map((item, i) => (
-                                <Messages
-                                    key={i}
-                                    user={item.id === id ? '' : item.user}
-                                    message={item.message}
-                                    classname={item.id === id ? 'right' : 'left'}
-                                />
-                            ))}
-                        </div>
-                        <div className="chat-footer">
-                            <form onSubmit={sendMessage}>
-                                <div className="input-button-box flex items-center">
-                                    <div className='flex w-full'>
-                                        <div className="input-box flex-1 ">
-                                            <TextField
-                                                id="outlined-basic"
-                                                label=""
-                                                fullWidth
-                                                variant="outlined"
-                                                name="message"
-                                                value={message}
-                                                onChange={inputHandler}
-                                                sx={{ borderRadius: "unset" }}
-                                            />
-                                        </div>
-                                        <div className="button-box">
-                                            <Button
-                                                type="submit"
-                                                variant="contained"
-                                                size="large"
-                                                fullWidth
-                                                sx={{ borderRadius: "unset", padding: "15px 0px" }}
-                                            >
-                                                Send
-                                            </Button>
+                <div className='flex-1'>
+                    {selectedUser?._id ? (
+                        <section className='chat-section'>
+                            <div className="chat-header flex bg-slate-500 justify-between p-6">
+                                <div className='text-white'>
+                                    To: <span className='font-bold'>{selectedUser?.name}</span>
+                                </div>
+                                <div className='text-white'>
+                                    <CustomMenu />
+                                </div>
+                            </div>
+                            <Conversation />
+                            <div className="chat-footer">
+                                <form onSubmit={sendMessageHandler}>
+                                    <div className="input-button-box flex items-center">
+                                        <div className='flex w-full'>
+                                            <div className="input-box flex-1">
+                                                <TextField
+                                                    className='bg-white'
+                                                    id="outlined-basic"
+                                                    label=""
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    name="message"
+                                                    value={message}
+                                                    onChange={inputHandler}
+                                                    sx={{ borderRadius: "unset" }}
+                                                />
+                                            </div>
+                                            <div className="button-box">
+                                                <Button
+                                                    type="submit"
+                                                    variant="contained"
+                                                    size="large"
+                                                    fullWidth
+                                                    sx={{ borderRadius: "unset", padding: "15px 30px" }}
+                                                >
+                                                    Send
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                            </form>
-                        </div>
-                    </div>
+                                </form>
+                            </div>
+                        </section>
+                    ) : (<NotSelectedConversation />)}
                 </div>
             </div>
         </div>

@@ -9,13 +9,20 @@ export interface LoginResType {
 }
 
 export interface userDetailsType {
-    name: string,
-    email: string,
-    username: string,
-    dob: string,
-    createdAt: string,
+  _id: string,
+  name: string,
+  email: string,
+  username: string,
+  dob: string,
+  createdAt: string,
 }
 
 export interface userResType {
   user: userDetailsType;
+}
+
+export interface selectedConversationType {
+  name: string,
+  username: string,
+  _id: string
 }

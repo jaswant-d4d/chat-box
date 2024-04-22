@@ -14,8 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../redux-store/store';
-import { userLogout } from '../redux-store/reducers/authSlice';
+import { AppDispatch, RootState } from '../../redux-store/store';
+import { userLogout } from '../../redux-store/reducers/authSlice';
 
 const pages = ['Products', 'Chat', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Chat', 'Account', 'Dashboard', 'Login', 'Logout'];
@@ -99,7 +99,7 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem key={page+"page"} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">
                     <Link to={`/${page?.toLowerCase()}`}>{page}</Link>
                   </Typography>
@@ -168,8 +168,8 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <>
+              {settings.map((setting, index) => (
+                <Box key={index}>
                   {setting === "Logout" && token ? (
                     <MenuItem>
                       <Typography textAlign="center" onClick={logoutHandler}>{setting}</Typography>
@@ -179,7 +179,7 @@ function ResponsiveAppBar() {
                       <Typography textAlign="center">{setting}</Typography>
                     </MenuItem>
                   )}
-                </>
+                </Box>
               ))}
             </Menu>
           </Box>

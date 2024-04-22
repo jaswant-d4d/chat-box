@@ -68,7 +68,7 @@ export const getUserList = createAsyncThunk("getUserList", async ({ userToken }:
     try {
         const token = userToken || (await (getState() as RootState).auth.token);
         const response = await axios.get(API_ENDPOINTS.USER_LIST, { headers: { Authorization: `Bearer ${token}` } });
-        return response.data;
+        return response.data.userList;
     }
     catch (err) {
         handleErrNotify(err, dispatch)
