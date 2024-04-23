@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux-store/store';
 import { getUserList } from '../../redux-store/actions/auth';
 import { setSelectedConversation } from '../../redux-store/reducers/authSlice';
 import avatar from "../../assets/images/avatars/2.jpg";
 import { selectedConversationType } from '../../redux-store/types/auth';
+import CustomDialog from '../../components/dialogs/CustomDialog';
 
 interface Params {
     onlineUsers: any[]
@@ -15,6 +16,7 @@ const UserList: React.FC<Params> = ({ onlineUsers }) => {
     const userList = useSelector((state: RootState) => state.chat.userList)
     const user = useSelector((state: RootState) => state.auth.user)
     const selectedUser = useSelector((state: RootState) => state.auth.selectedConversation)
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         dispatch(getUserList({}))
@@ -23,6 +25,15 @@ const UserList: React.FC<Params> = ({ onlineUsers }) => {
     const UserSelectHandler = (user: selectedConversationType) => {
         dispatch(setSelectedConversation(user))
     }
+
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     return (
         <>
@@ -51,23 +62,31 @@ const UserList: React.FC<Params> = ({ onlineUsers }) => {
                         {userList?.map((user, index) => (
                             <li className={`border-b-2 border-b-white  px-2 hover:bg-slate-400  ${user?._id === selectedUser?._id ? "bg-slate-400" : ""}`} onClick={() => UserSelectHandler(user)} key={index}>
                                 <a >
-                                    <div className="flex py-4">
-                                        <div className={`chat-user-img align-self-center me-3 ms-0 ${onlineUsers?.includes(user?._id) ? "online" : ""} `}>
-                                            <img src={require("../../assets/images/avatars/2.jpg")}
-                                                className="bg-gray-50" alt="" />
-                                            <div className="user-status"></div>
-                                        </div>
+                                    <div className="flex justify-between py-4">
+                                        <div className='flex'>
+                                            <div className={`chat-user-img align-self-center me-3 ms-0 ${onlineUsers?.includes(user?._id) ? "online" : ""} `}>
+                                                <img src={require("../../assets/images/avatars/2.jpg")}
+                                                    className="bg-gray-50" alt="" />
+                                                <div className="user-status"></div>
+                                            </div>
 
-                                        <div className="flex-grow-1 overflow-hidden">
-                                            <h5 className="text-truncate font-size-15 mb-1">{user.name}</h5>
-                                            <p className="chat-user-message text-truncate mb-0">Hey! there
-                                                I'm available</p>
+                                            <div className="flex-grow-1 overflow-hidden">
+                                                <h5 className="text-truncate font-size-15 mb-1">{user.name}</h5>
+                                                <p className="chat-user-message text-truncate mb-0">Hey! there
+                                                    I'm available</p>
+                                            </div>
                                         </div>
                                         <div className="font-size-11">05 min</div>
                                     </div>
                                 </a>
                             </li>
                         ))}
+                        <li className={`mt-10 p-4 bg-slate-400 flex justify-center`}>
+                            <React.Fragment>
+                                <button className='border-2 p-2 px-10 hover:bg-slate-200 ' onClick={handleClickOpen}>Create Group</button>
+                                <CustomDialog open={open} onClose={handleClose} title={"New Group"} content={""} dialogType={"FORM"} />
+                            </React.Fragment>
+                        </li>
                     </ul>
                 </div>
             </section>

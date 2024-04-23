@@ -8,6 +8,8 @@ export const API_ENDPOINTS = {
     USER_DETAILS: API_AUTH + "user-details",
     USER_LIST: API_AUTH + "user-list",
     SEND_MESSAGE: API + "send-message",
+    GROUP_CREATE: API + "groups/create",
+    GROUP_JOIN: API + "groups/join",
     GET_MESSAGES: API + "get-messages",
 }
 export const WEBSOCKET_URL = 'http://localhost:8080'

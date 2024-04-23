@@ -58,3 +58,34 @@ export const sendMessage = createAsyncThunk("sendMessage", async ({ message, rec
         handleErrNotify(err, dispatch)
     }
 })
+
+
+
+
+/// Group Chat Start ///
+
+export const createGroup = createAsyncThunk("createGroup", async (formData:any, { getState, dispatch }) => {
+    try {
+        const token = (await (getState() as RootState).auth.token);
+        const response = await axios.post(`${API_ENDPOINTS.GROUP_CREATE}`, formData, { headers: { Authorization: `Bearer ${token}` } });
+        await handleSuccessNotify(response)
+        return response.data;
+    }
+    catch (err) {
+        handleErrNotify(err, dispatch)
+    }
+})
+
+
+export const joinGroup = createAsyncThunk("joinGroup", async ({ message, receiverId }: { message: string; receiverId: string }, { getState, dispatch }) => {
+    try {
+        const token = (await (getState() as RootState).auth.token);
+        const response = await axios.post(`${API_ENDPOINTS.GROUP_JOIN}/${receiverId}`, { message }, { headers: { Authorization: `Bearer ${token}` } });
+        return response.data;
+    }
+    catch (err) {
+        handleErrNotify(err, dispatch)
+    }
+})
+
+
