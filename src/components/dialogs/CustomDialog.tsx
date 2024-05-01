@@ -1,66 +1,45 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
-import { TransitionProps } from '@mui/material/transitions';
-import { Box, Divider, TextField } from '@mui/material';
-import MultipleSelectChip from '../lists/MultipleSelectChip';
-import { GroupAdd, GroupAddOutlined, GroupAddRounded, Groups2, Groups3 } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux-store/store';
 import { createGroup } from '../../redux-store/actions/chat';
-
+import { Box, Divider, FormControl, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Slide } from '@mui/material';
+import MultipleSelectChip from '../lists/MultipleSelectChip';
+import { Close, Groups2 } from '@mui/icons-material';
 
 interface Props {
-    open: boolean
-    onClose: (action: boolean) => void
-    title: string,
-    content?: string
-    dialogType: string
+    open: boolean;
+    onClose: (action: boolean) => void;
+    title: string;
+    content?: string;
 }
 
 const Transition = React.forwardRef(function Transition(
-    props: TransitionProps & {
-        children: React.ReactElement<any, any>;
-    },
+    props: any,
     ref: React.Ref<unknown>,
 ) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CustomDialog: React.FC<Props> = ({ open, onClose, title, content, dialogType }) => {
-    const dispatch = useDispatch<AppDispatch>()
-    const [fields, setFields] = React.useState({
-        groupName: "", members: []
-    })
+const CustomDialog: React.FC<Props> = ({ open, onClose, title, content }) => {
+    const dispatch = useDispatch<AppDispatch>();
+    const [fields, setFields] = React.useState<{ name: string; members: string[] }>({ name: "", members: [] });
 
     const handleClose = () => {
-        onClose(false)
+        onClose(false);
     }
 
-    const setGroupName = (e: any) => {
-        setFields({ ...fields, groupName: e.target.value })
+    const setGroupName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFields({ ...fields, name: e.target.value });
     }
 
-    const addMembers = (members: any) => {
-        console.log(members)
-        setFields({ ...fields, members: members })
-    }
-
-    const handleSubmit = (e: any) => {
-        e.preventDefault()
-
-        dispatch(createGroup(fields))
-        // handleClose()
-        // setFields({ groupName: "", members: [] })
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        await dispatch(createGroup(fields));
+        handleClose();
+        setFields({ name: "", members: [] });
     }
 
     return (
-
         <Dialog
             open={open}
             TransitionComponent={Transition}
@@ -70,8 +49,10 @@ const CustomDialog: React.FC<Props> = ({ open, onClose, title, content, dialogTy
             fullWidth
         >
             <form onSubmit={handleSubmit}>
-
-                <DialogTitle className=''><Groups2 className='me-2' />{title}</DialogTitle>
+                <Box className="flex justify-between items-center">
+                    <DialogTitle><Groups2 className='me-2' />{title}</DialogTitle>
+                    <Close className='me-4' onClick={handleClose} />
+                </Box>
                 <Divider />
                 <DialogContent>
                     {content && (
@@ -81,11 +62,11 @@ const CustomDialog: React.FC<Props> = ({ open, onClose, title, content, dialogTy
                         </DialogContentText>
                     )}
                     <Box className="mb-8">
-                        <label htmlFor="">Group Name</label>
-                        <input type="text" name="name" className="border-2 border-grey-100  rounded p-3 w-full" placeholder="Group Name" onChange={setGroupName} />
+                        <label htmlFor="groupName">Group Name</label>
+                        <input type="text" name="groupName" value={fields.name} className="border-2 border-grey-100  rounded p-3 w-full" placeholder="Group Name" onChange={setGroupName} />
                     </Box>
                     <Box className="mb-4">
-                        <MultipleSelectChip addMembers={addMembers}/>
+                        <MultipleSelectChip addMembers={(members) => setFields({ ...fields, members })} />
                     </Box>
                 </DialogContent>
                 <DialogActions className='m-4 mt-0'>
@@ -96,4 +77,4 @@ const CustomDialog: React.FC<Props> = ({ open, onClose, title, content, dialogTy
     );
 }
 
-export default CustomDialog
+export default CustomDialog;

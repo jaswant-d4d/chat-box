@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux-store/store';
 import Messages from '../../components/messages/Messages';
-import { getMessageList, sendMessage } from '../../redux-store/actions/chat';
+import { getGroupMessages, getMessageList, sendMessage } from '../../redux-store/actions/chat';
 import MessageSkeleton from '../../components/skeletons/MessageSkeleton';
 
 const Conversation = () => {
@@ -23,6 +23,9 @@ const Conversation = () => {
         setLoading(true)
         if (selectedUser?._id) {
             dispatch(getMessageList({ receiverId: selectedUser?._id }));
+            if(selectedUser?.isGroup){
+                dispatch(getGroupMessages({ groupId: selectedUser?._id }));
+            }
         }
         setTimeout(() => {
             setLoading(false)
@@ -33,9 +36,10 @@ const Conversation = () => {
         fetchMessages()
     }, [dispatch, selectedUser]);
 
+
     return (
 
-        <div className="chat-messages-container custom-scrollbar h-full">
+        <div className="chat-messages-container custom-scrollbar h-full" >
             {!loading && conversations?.length > 0 ? (
                 conversations?.map((item, i) => (
                     <div key={i} ref={i === conversations.length - 1 ? lastMessageRef : null}>

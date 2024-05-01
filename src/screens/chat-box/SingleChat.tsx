@@ -4,7 +4,7 @@ import io, { Socket } from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux-store/store';
 import UserList from './UserList';
-import { sendMessage } from '../../redux-store/actions/chat';
+import { sendGroupMessage, sendMessage } from '../../redux-store/actions/chat';
 import NotSelectedConversation from './NotSelectedConversation';
 import { sendNewMessage, setOnlineUsers } from '../../redux-store/reducers/chatSlice';
 import NotificationSound from "../../assets/sounds/notification.mp3";
@@ -18,15 +18,16 @@ const SingleChat = () => {
     const [message, setMessage] = useState<string>('');
     const user = useSelector((state: RootState) => state.auth.user);
     const selectedUser = useSelector((state: RootState) => state.auth.selectedConversation);
-    // const socket = useSelector((state: RootState) => state.chat.socket);
     const { onlineUsers } = useSelector((state: RootState) => state.chat);
 
     useEffect(() => {
-        if (!user) return;
+        if (!user || !selectedUser._id) return;
         const socket = io('https://chat-backend-omega-mocha.vercel.app', {
+        // const socket = io('http://localhost:8080', {
             transports: ['websocket'],
             query: {
                 userId: user._id,
+                groupId: selectedUser._id
             },
         });
 
@@ -43,20 +44,35 @@ const SingleChat = () => {
             newMessage.shouldShake = true;
             const sound = new Audio(NotificationSound);
             sound.play();
-            dispatch(sendNewMessage(newMessage));
+            console.log(newMessage?.receiverId === user._id && newMessage?.senderId === selectedUser?._id)
+            if (newMessage?.receiverId === user._id && newMessage?.senderId === selectedUser?._id) {
+                dispatch(sendNewMessage(newMessage));
+            }
         };
+
+        // const handleGroupMessage = (message: any) => {
+        //     console.log('groupMessage!', message);
+        //     setMessages(prevMessages => [...prevMessages, message]);
+        // };
+        
+       
+
 
         socket.on('connect', handleConnect);
         socket.on('getOnlineUsers', handleGetOnlineUsers);
         socket.on('newMessage', handleNewMessage);
+        // socket.on('groupMessage', handleGroupMessage);
 
         return () => {
             socket.off('connect', handleConnect);
             socket.off('getOnlineUsers', handleGetOnlineUsers);
             socket.off('newMessage', handleNewMessage);
+            // socket.off('groupMessage', handleGroupMessage);
             socket.close();
         };
     }, []);
+
+		
 
     const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         setMessage(e.target.value);
@@ -67,8 +83,14 @@ const SingleChat = () => {
         if (!message) {
             return false;
         }
-        const formData = { message: message, receiverId: selectedUser?._id }
-        dispatch(sendMessage(formData));
+        if (selectedUser?.isGroup) {
+            const formData = { message: message, groupId: selectedUser?._id }
+            dispatch(sendGroupMessage(formData));
+
+        } else {
+            const formData = { message: message, receiverId: selectedUser?._id }
+            dispatch(sendMessage(formData));
+        }
         setMessage('');
     };
 
@@ -76,12 +98,13 @@ const SingleChat = () => {
         const selectedConversationData = {
             name: "",
             username: "",
-            _id: ""
+            _id: "",
+            isGroup: false
         }
         dispatch(setSelectedConversation(selectedConversationData))
     }
     return (
-        <div className='container mx-auto mt-10'>
+        <div className=' mx-auto '>
             <div className='flex h-screen'>
                 <div className={`chat-left-sidebar ${!selectedUser?._id ? "show" : ""}`}>
                     <UserList onlineUsers={onlineUsers} />

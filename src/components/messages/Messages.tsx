@@ -10,7 +10,7 @@ interface MessageProps {
 }
 
 const Messages: React.FC<MessageProps> = ({ user, message, classname, createdAt }: MessageProps) => {
-
+    
     if (user === "You") {
         return (
             <div className={`chat chat-end mb-2 ${classname}`}>

@@ -15,7 +15,8 @@ const initialState: AuthState = {
     selectedConversation: {
         name: "",
         username: "",
-        _id: ""
+        _id: "",
+        isGroup: false
     }
 }
 
@@ -26,7 +27,7 @@ export const authSlice = createSlice({
         userLogout(state, action) {
             state.token = "";
             state.user = null;
-            state.selectedConversation = { name: "", username: "", _id: "" };
+            state.selectedConversation = { name: "", username: "", _id: "", isGroup: false };
         },
 
         setSelectedConversation(state, action: PayloadAction<selectedConversationType>) {

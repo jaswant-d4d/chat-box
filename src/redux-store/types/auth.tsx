@@ -22,7 +22,8 @@ export interface userResType {
 }
 
 export interface selectedConversationType {
-  name: string,
-  username: string,
+  name: string
+  username: string
   _id: string
+  isGroup: boolean
 }

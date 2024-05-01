@@ -64,10 +64,10 @@ export const sendMessage = createAsyncThunk("sendMessage", async ({ message, rec
 
 /// Group Chat Start ///
 
-export const createGroup = createAsyncThunk("createGroup", async (formData:any, { getState, dispatch }) => {
+export const createGroup = createAsyncThunk("createGroup", async (formData: any, { getState, dispatch }) => {
     try {
         const token = (await (getState() as RootState).auth.token);
-        const response = await axios.post(`${API_ENDPOINTS.GROUP_CREATE}`, formData, { headers: { Authorization: `Bearer ${token}` } });
+        const response = await axios.post(`${API_ENDPOINTS.API_GROUP}${API_ENDPOINTS.CREATE}`, formData, { headers: { Authorization: `Bearer ${token}` } });
         await handleSuccessNotify(response)
         return response.data;
     }
@@ -77,10 +77,10 @@ export const createGroup = createAsyncThunk("createGroup", async (formData:any, 
 })
 
 
-export const joinGroup = createAsyncThunk("joinGroup", async ({ message, receiverId }: { message: string; receiverId: string }, { getState, dispatch }) => {
+export const joinGroup = createAsyncThunk("joinGroup", async ({ userId, groupId }: { userId: string; groupId: string }, { getState, dispatch }) => {
     try {
         const token = (await (getState() as RootState).auth.token);
-        const response = await axios.post(`${API_ENDPOINTS.GROUP_JOIN}/${receiverId}`, { message }, { headers: { Authorization: `Bearer ${token}` } });
+        const response = await axios.post(`${API_ENDPOINTS.API_GROUP}${groupId}/${API_ENDPOINTS.JOIN}`, { userId }, { headers: { Authorization: `Bearer ${token}` } });
         return response.data;
     }
     catch (err) {
@@ -88,4 +88,23 @@ export const joinGroup = createAsyncThunk("joinGroup", async ({ message, receive
     }
 })
 
-
+export const sendGroupMessage = createAsyncThunk("sendGroupMessage", async ({ message, groupId }: { message: string; groupId: string }, { getState, dispatch }) => {
+    try {
+        const token = (await (getState() as RootState).auth.token);
+        const response = await axios.post(`${API_ENDPOINTS.API_GROUP}${groupId}/${API_ENDPOINTS.SEND_MESSAGES}`, { message }, { headers: { Authorization: `Bearer ${token}` } });
+        return response.data;
+    }
+    catch (err) {
+        handleErrNotify(err, dispatch)
+    }
+})
+export const getGroupMessages = createAsyncThunk("getGroupMessages", async ({ groupId }: { groupId: string }, { getState, dispatch }) => {
+    try {
+        const token = (await (getState() as RootState).auth.token);
+        const response = await axios.get(`${API_ENDPOINTS.API_GROUP}${groupId}/${API_ENDPOINTS.MESSAGES}`, { headers: { Authorization: `Bearer ${token}` } });
+        return response.data?.conversation;
+    }
+    catch (err) {
+        handleErrNotify(err, dispatch)
+    }
+})

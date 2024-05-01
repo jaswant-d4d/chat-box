@@ -31,12 +31,16 @@
 }
 
 .user-list-box {
-    max-height: 74vh;
-    min-height: 74vh;
-    overflow: auto;
+    min-height: calc(100vh - 242px);
+    max-height: calc(100vh - 242px);
+    overflow: auto; 
+    position: relative;
+}
+.user-list-box ul li:last-child{
+   border: none;
 }
 .chat-left-sidebar {
-    width: 45%;
+    width: 40%;
 }
 
 .chat-section {
@@ -44,8 +48,8 @@
 }
 
 .chat-messages-container {
-    max-height: 74vh;
-    min-height: 74vh;
+    min-height: calc(100vh - 162px);
+    max-height: calc(100vh - 162px);
     padding: 1rem;
     overflow-y: auto;
     border-right: 1px solid #ddd;
@@ -81,7 +85,7 @@
 }
 
 .not-selected-conversation {
-    height: 93vh;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;

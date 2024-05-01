@@ -23,13 +23,13 @@ function App() {
       <Routes>
         <Route path='/' element={<Layout />} >
           <Route index element={<Home />} />
-          <Route path="/chat" element={<ProtectedRoute><SingleChat /></ProtectedRoute>} />
           <Route path='/signup' element={<Signup />} />
           <Route path='/login' element={<Login />} />
           <Route path='/checkout' element={<Checkout />} />
           <Route path='/success' element={<Success />} />
           <Route path='/cancel' element={<Cancel />} />
         </Route>
+          <Route path="/chat" element={<ProtectedRoute><SingleChat /></ProtectedRoute>} />
       </Routes>
     </div>
   );

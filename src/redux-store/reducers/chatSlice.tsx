@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ChatState, Message } from "../types/chat"
-import { getMessageList, sendMessage } from "../actions/chat";
+import { getGroupMessages, getMessageList, sendGroupMessage, sendMessage } from "../actions/chat";
 import { getUserList } from "../actions/auth";
 
 const initialState: ChatState = {
@@ -33,10 +33,22 @@ const chatSlice = createSlice({
         builder.addCase(getMessageList.fulfilled, (state, action) => {
             state.messages = action.payload
         })
+        builder.addCase(getGroupMessages.fulfilled, (state, action) => {
+            state.messages = action.payload
+        })
         builder.addCase(getUserList.fulfilled, (state, action) => {
             state.userList = action.payload;
         })
         builder.addCase(sendMessage.fulfilled, (state, action) => {
+            const newMessage = action.payload?.newMessage;
+            if (newMessage) {
+                if (!state.messages) {
+                    state.messages = [];
+                }
+                state.messages.push(newMessage);
+            }
+        })
+        builder.addCase(sendGroupMessage.fulfilled, (state, action) => {
             const newMessage = action.payload?.newMessage;
             if (newMessage) {
                 if (!state.messages) {

@@ -40,11 +40,13 @@ const UserList: React.FC<Params> = ({ onlineUsers }) => {
             <section className='user-list-section'>
                 <div className="px-4 pt-4 border-b-2 bg-slate-400">
                     <div className="flex items-center">
+                       
                         <div className="chat-user-img mr-2">
                             <img src={avatar} alt="avatar" />
                         </div>
                         <h2 className=" text-2xl text-slate-800 ">
-                            {user?.name}</h2>
+                            {user?.name}
+                            </h2>
                     </div>
                     <div className="search-box chat-search-box">
                         <div className="input-group mb-3 rounded-3">
@@ -81,13 +83,13 @@ const UserList: React.FC<Params> = ({ onlineUsers }) => {
                                 </a>
                             </li>
                         ))}
-                        <li className={`mt-10 p-4 bg-slate-400 flex justify-center`}>
-                            <React.Fragment>
-                                <button className='border-2 p-2 px-10 hover:bg-slate-200 ' onClick={handleClickOpen}>Create Group</button>
-                                <CustomDialog open={open} onClose={handleClose} title={"New Group"} content={""} dialogType={"FORM"} />
-                            </React.Fragment>
-                        </li>
                     </ul>
+                </div>
+                <div className={` p-4 bg-slate-400 flex justify-center`}>
+                    <React.Fragment>
+                        <button className='border-2 p-2 px-10 hover:bg-slate-200 ' onClick={handleClickOpen}>Create Group</button>
+                        <CustomDialog open={open} onClose={handleClose} title={"New Group"} content={""} />
+                    </React.Fragment>
                 </div>
             </section>
         </>
